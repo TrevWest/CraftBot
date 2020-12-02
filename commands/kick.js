@@ -2,6 +2,9 @@
 !kick: Kicks mentioned user
 Usage: "!kick <@user>"
 */
+
+// Under construction
+
 module.exports = {
     name: 'kick',
     description: 'Kicks mentioned user',

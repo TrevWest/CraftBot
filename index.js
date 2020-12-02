@@ -12,6 +12,7 @@
 */
 
 /* TODO MAIN:
+Implement proper kick command
 Audio files played through voice chat on command/action
 Media files posted on command/action
 */
