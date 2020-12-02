@@ -17,7 +17,6 @@ Media files posted on command/action
 */
 
 /* TODO SIDE:
-Make git exceptions for real .json files BEFORE first commit
 Regex for "i'm [any word(s)] dirty [any word(s)] dan
 Flesh out console logging (log after each action, etc.)
 Better admin-only functionality
