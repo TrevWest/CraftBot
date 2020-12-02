@@ -1,0 +1,6 @@
+{
+    "prefix": "!",
+    "commandDir": "./commands",
+    "token": "[Discord token goes here!]",
+    "steamKey": "[Steam key goes here!]"
+}
