@@ -7,6 +7,7 @@ module.exports = {
     name: 'kick',
     description: 'Kicks mentioned user',
     guildOnly: true,
+    adminOnly: true,
     args: true,
     execute(message, args) {
         // Get user to be kicked

@@ -17,9 +17,9 @@ Media files posted on command/action
 */
 
 /* TODO SIDE:
+Better logging of info on command message author
 Regex for "i'm [any word(s)] dirty [any word(s)] dan
 Flesh out console logging (log after each action, etc.)
-Better admin-only functionality
 Expand argument checking (min, max, types)
 Better "usage" implementation in !help
 */
@@ -30,6 +30,7 @@ Command property list ('+' indicates an optional property):
 name <string>          : command name
 +description <string>  : brief description; used in !help
 +guildOnly <bool>      : determines if command is guild-only
++adminOnly <bool>      : determines if command is admin-only
 +args <bool>           : determines if command requires arguments
 +usage <string>        : shows correct usage
 +cooldown <int>        : command cooldown time (per user) in seconds
@@ -37,7 +38,7 @@ name <string>          : command name
 
 const fs = require('fs');
 const Discord = require('discord.js');
-const { prefix, commandDir, token } = require('./config.json');
+const { prefix, commandDir, token, adminID } = require('./config.json');
 
 // Create client object with specified gateway intents
 const { Client } = require('discord.js');
@@ -87,6 +88,11 @@ client.on('message', message => {
     // Check if command is guild-only
     if (command.guildOnly && message.channel.type === 'dm') {
         return message.reply('Command cannot be executed within DMs!');
+    }
+
+    // Admin-only
+    if (command.adminOnly && message.member.roles.cache.first().id != adminID) {
+        return message.reply('this command is admin-only');
     }
 
     // Command requires arguments but no arguments given
