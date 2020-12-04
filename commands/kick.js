@@ -3,19 +3,22 @@
 Usage: "!kick <@user>"
 */
 
-// Under construction
-
 module.exports = {
     name: 'kick',
     description: 'Kicks mentioned user',
     guildOnly: true,
     args: true,
     execute(message, args) {
-        if (!message.mentions.users.size) {
-            return message.reply('you want me to kick...no one?');
-        }
-        const taggedUser = message.mentions.users.first();
+        // Get user to be kicked
+        const taggedUser = message.mentions.members.first();
 
-        message.channel.send(`${taggedUser}, you're outta here`);
+        // Notify of impeding doom
+        message.channel.send(`${taggedUser}, you're outta here!`);
+        
+        // Attempt to kick user; if kick failed, log and notify
+        taggedUser.kick().catch((reason) => {
+            console.error(`Failed to kick ${taggedUser.user.username}. Reason: ${reason}`);
+            message.channel.send('Failed to kick user.');
+        });
     }
 }
