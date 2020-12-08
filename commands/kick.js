@@ -12,13 +12,12 @@ module.exports = {
     execute(message, args) {
         // Get user to be kicked
         const taggedUser = message.mentions.members.first();
-
-        // Notify of impeding doom
-        message.channel.send(`${taggedUser}, you're outta here!`);
         
         // Attempt to kick user; if kick failed, log and notify
-        taggedUser.kick().catch((reason) => {
-            console.error(`Failed to kick ${taggedUser.user.username}. Reason: ${reason}`);
+        taggedUser.kick().then(() => {
+            message.channel.send(`${taggedUser}, you're outta here!`);
+        }).catch((reason) => {
+            console.error(`Failed to kick ${taggedUser.user.username}. ${reason}`);
             message.channel.send('Failed to kick user.');
         });
     }

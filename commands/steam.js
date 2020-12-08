@@ -41,7 +41,7 @@ module.exports = {
         delete require.cache[require.resolve('../steam.json')];
         steam = require('../steam.json');
 
-        idCollection = new Discord.Collection();
+        var idCollection = new Discord.Collection();
 
         /*
         Took this approach for my own convenience, acknowledging
@@ -75,9 +75,8 @@ module.exports = {
             // Write JSON to steam.json
             fs.writeFile('./steam.json', JSON.stringify(steamJSON, null, 4), (err) => {
                 if (err) throw err;
+                console.log('!steam: steam.json updated');
             });
-
-            console.log('!steam: steam.json updated');
         }
 
         /*
@@ -89,14 +88,19 @@ module.exports = {
             
             // If steam.gamesInCommon is empty
             if (numGames == 0) {
-                message.channel.send('It doesn\'t look like you guys have any games in common!');
-                message.channel.send('Try running "!steam update" then try again');
-                return;
+                let data = [];
+                
+                data.push('It doesn\'t look like you guys have any games in common!');
+                data.push('Try running "!steam update" then try again');
+
+                return message.channel.send(data, { split: true });
             }
             
+            // Randomly select game from list
             const pick = steam.gamesInCommon[Math.floor(Math.random() * numGames)];
             
-            message.channel.send(`How about... ${pick}?`);
+            // Make suggestion
+            return message.channel.send(`How about... ${pick}?`);
         }
 
         /*
@@ -106,19 +110,29 @@ module.exports = {
         else if (args.length == 1 && args[0] === 'list') {
             // If steam.gamesInCommon is empty
             if (steam.gamesInCommon.length == 0) {
-                message.channel.send('It doesn\'t look like you guys have any games in common!');
-                message.channel.send('Try running "!steam update" then try again');
-                return;
+                let data = [];
+                
+                data.push('It doesn\'t look like you guys have any games in common!');
+                data.push('Try running "!steam update" then try again');
+                
+                return message.channel.send(data, { split: true });
             }
             
+            // Output data
+            let data = [];
+            
+            // Compile game list
             var outputString = '\`\`\`';
-            for (const game of steam.gamesInCommon) {
-                outputString += `\n${game}`;
-            }
+            outputString += steam.gamesInCommon.join('\n');
             outputString += '\`\`\`';
-            message.channel.send('Here are the games you have in common!');
-            message.channel.send(outputString);
-            message.channel.send('To update this list, run "!steam update"');
+
+            // Prepare output data
+            data.push('Here are the games you have in common:');
+            data.push(outputString);
+            data.push('To update this list, run "!steam update"');
+
+            // Send list
+            return message.channel.send(data);
         }
 
         /*
@@ -128,8 +142,8 @@ module.exports = {
         TODO: FORMATTING AND COMMENTS
         */
         else if (args.length == 1 && args[0] === 'update') {
-            var gamesLists = [];
-            var requestsComplete = 0;
+            var gamesLists = []; // Holds each guild member's list of owned games
+            var requestsComplete = 0; // Tracks number of HTTP requests completed
             const numMembers = steam.IDs.length;
 
             /*
@@ -143,7 +157,6 @@ module.exports = {
                         shortest = item;
                     }
                 }
-
                 return shortest;
             }
 
@@ -152,29 +165,36 @@ module.exports = {
             and writes JSON to steam.json
             */
             function computeSharedGames() {
+                // Start with smallest list for optimal time
                 var sharedList = shortestList(gamesLists);
 
+                // Determine shared games using array intersection
                 for (list of gamesLists) {
                     sharedList = sharedList.filter(x => list.includes(x));
                 }
-
                 steam.gamesInCommon = sharedList;
+
                 writeSteamJSON();
                 message.channel.send('Shared games list updated.');
             }
 
             /*
             Callback function for http requests
+            Called once per user in steam.IDs
             */
             function callback(response) {
                 var responseString = '';
 
+                // Add data chunk to response string
                 response.on('data', chunk => {
                     responseString += chunk;
                 });
 
+                // Called once data has finished being received
                 response.on('end', () => {
                     var res = [];
+                    
+                    // Parse received JSON
                     try {
                         var resJSON = JSON.parse(responseString);
                     } catch (error) {
@@ -183,13 +203,18 @@ module.exports = {
                         console.error('Bailing out. Try again maybe?');
                         return;
                     }
+
+                    // Extract game titles and place into array
                     for (const game of resJSON.response.games) {
                         res.push(game.name);
                     }
+                    // Add to gamesLists
                     gamesLists.push(res);
+
+                    // Track number of complete requests
                     ++requestsComplete;
                     if (requestsComplete == numMembers) {
-                        computeSharedGames();
+                        computeSharedGames(); // Calls after last request completes
                     }
                 });
             }
@@ -199,11 +224,13 @@ module.exports = {
             and call callback function to handle responses
             */
             for (const ID of idCollection) {
+                // Set http request options
                 var options = {
                     host: 'api.steampowered.com',
                     path: `/IPlayerService/GetOwnedGames/v0001/?key=${steamKey}&steamid=${ID[1]}&include_appinfo=true&format=json`
                 };
 
+                // Execute asynchronous requests
                 try {
                     http.get(options, callback);
                 } catch (error) {
@@ -222,12 +249,15 @@ module.exports = {
                 return message.reply('you\'re not my dad.');
             }
             
+            // Get specified user
             let mention = message.mentions.users.first();
 
+            // Check that user is known by CraftBot
             if (!idCollection.has(mention.username)) {
                 return message.channel.send(`I don't know ${mention.username}'s steam ID!`);
             }
 
+            // Fetch steam ID and send in message channel
             let steamId = idCollection.get(mention.username);
             message.channel.send(`${mention.username}'s steam ID: ${steamId}`);
         }
@@ -243,12 +273,15 @@ module.exports = {
                 return message.reply('you\'re not my dad.');
             }
 
+            // Get mentioned user and steam ID value
             let steamId = args[2];
             let mention = message.mentions.users.first();
-            idCollection.set(mention.username, steamId);
 
+            // Add collection entry and write to steam.json
+            idCollection.set(mention.username, steamId);
             writeSteamJSON();
 
+            // Notify of task completion
             message.channel.send(`Set ${mention.username}'s Steam ID: ${steamId}`);
         }
 

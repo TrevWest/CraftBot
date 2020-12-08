@@ -17,9 +17,9 @@ Media files posted on command/action
 */
 
 /* TODO SIDE:
-Better logging of info on command message author
+Better logging of info on guild members & command message authors
 Regex for "i'm [any word(s)] dirty [any word(s)] dan
-Flesh out console logging (log after each action, etc.)
+Better admin-only functionality (admin list, partial command restrictions)
 Expand argument checking (min, max, types)
 Better "usage" implementation in !help
 */
@@ -56,11 +56,17 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
-// Command cooldowns
+// Initialize command cooldown collection
 const cooldowns = new Discord.Collection();
 
 client.once('ready', () => {
-	console.log('Ready');
+    //.. set status offline first thing
+    
+    //.. get guild/member info
+
+    //.. set status online
+    
+    console.log('Client ready');
 });
 
 // Command handler
@@ -80,6 +86,7 @@ client.on('message', message => {
 
     // Invalid command
     if (!client.commands.has(commandName)) {
+        console.log(`Invalid command: ${commandName}`);
         return message.reply('your command is bad and you should feel bad.');
     }
 
@@ -105,6 +112,8 @@ client.on('message', message => {
 
         return message.channel.send(`\`\`\`\n${reply}\n\`\`\``);
     }
+
+    //--------------------------Cooldowns--------------------------
 
     // Add entry in cooldowns for command if not present
     if (!cooldowns.has(command.name)) {
@@ -133,6 +142,8 @@ client.on('message', message => {
     // Update command timestamp collection and set self-delete
     timestamps.set(message.author.id, now);
     setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+
+    //-------------------------------------------------------------
 
     // Execute command
     try {
@@ -166,14 +177,14 @@ fs.watch(commandDir, (event, filename) => {
             fsWait = false;
         }, 100);
 
-        console.log(`File change detected in ./commands: ${filename}`);
+        console.log(`File change detected in ${commandDir}: ${filename}`);
 
         // Remove file from require cache
-        delete require.cache[require.resolve(`./commands/${filename}`)];
+        delete require.cache[require.resolve(`${commandDir}/${filename}`)];
 
         // Reload command into client.commands
         try {
-            const command = require(`./commands/${filename}`);
+            const command = require(`${commandDir}/${filename}`);
             client.commands.set(command.name, command);
             console.log(`Successfully reloaded ${filename}`);
         } catch (error) {
