@@ -40,6 +40,8 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix, commandDir, token, adminID } = require('./config.json');
 
+const cooldowns = require('./tools/cooldown.js');
+
 // Create client object with specified gateway intents
 const { Client } = require('discord.js');
 const client = new Client({ ws: { intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_VOICE_STATES', 'GUILD_PRESENCES', 'GUILD_MESSAGES'] } });
@@ -56,15 +58,23 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
-// Initialize command cooldown collection
-const cooldowns = new Discord.Collection();
+// Create command cooldown collection within client
+client.cooldowns = new Discord.Collection();
 
+// On client ready
 client.once('ready', () => {
-    //.. set status offline first thing
+    // Set status offline first thing
+    client.user.setStatus('invisible')
+        .then(console.log)
+        .catch(console.error);
     
     //.. get guild/member info
+    
 
-    //.. set status online
+    // Set status online
+    client.user.setStatus('online')
+        .then(console.log)
+        .catch(console.error);
     
     console.log('Client ready');
 });
@@ -113,37 +123,12 @@ client.on('message', message => {
         return message.channel.send(`\`\`\`\n${reply}\n\`\`\``);
     }
 
-    //--------------------------Cooldowns--------------------------
-
-    // Add entry in cooldowns for command if not present
-    if (!cooldowns.has(command.name)) {
-        cooldowns.set(command.name, new Discord.Collection());
-    }
-
-    // Store current timestamp
-    const now = Date.now();
-    // Fetch timestamp collection for command
-    const timestamps = cooldowns.get(command.name);
-    // Fetch command cooldown amount; default 3
-    const cooldownAmount = (command.cooldown || 3) * 1000;
-
-    // Check whether timestamp entry exists for message author
-    if (timestamps.has(message.author.id)) {
-        // Calculate expiration time
-        const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
-
-        // If expiration time has not passed, inform user and return
-        if (now < expirationTime) {
-            const timeLeft = (expirationTime - now) / 1000;
-            return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the '${prefix}${command.name}' command`);
-        }
-    }
-
-    // Update command timestamp collection and set self-delete
-    timestamps.set(message.author.id, now);
-    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
-
-    //-------------------------------------------------------------
+    /*
+    Cooldown handler
+    Returns true if cooldown is active for message author
+    Returns false if cooldown is inactive for message author
+    */
+    if (cooldowns.handler(command, message)) return;
 
     // Execute command
     try {
