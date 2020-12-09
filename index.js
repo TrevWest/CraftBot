@@ -12,6 +12,7 @@
 */
 
 /* TODO MAIN:
+Console command handling
 Audio files played through voice chat on command/action
 Media files posted on command/action
 */
@@ -22,6 +23,7 @@ Regex for "i'm [any word(s)] dirty [any word(s)] dan
 Better admin-only functionality (admin list, partial command restrictions)
 Expand argument checking (min, max, types)
 Better "usage" implementation in !help
+Move cooldown list from client to cooldown.js(?)
 */
 
 /*
@@ -38,9 +40,9 @@ name <string>          : command name
 
 const fs = require('fs');
 const Discord = require('discord.js');
-const { prefix, commandDir, token, adminID } = require('./config.json');
+const { prefix, commandDir, consoleCmdDir, token, adminID } = require('./config.json');
 
-const cooldowns = require('./tools/cooldown.js');
+const cooldowns = require('./tools/cooldown.js'); // Cooldown handler tool
 
 // Create client object with specified gateway intents
 const { Client } = require('discord.js');
@@ -50,11 +52,11 @@ const client = new Client({ ws: { intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_VO
 client.commands = new Discord.Collection();
 
 // Create array of all .js files located in ./commands
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(commandDir).filter(file => file.endsWith('.js'));
 
 // Map command files to command names in client.commands
 for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
+    const command = require(`${commandDir}/${file}`);
     client.commands.set(command.name, command);
 }
 
@@ -63,11 +65,6 @@ client.cooldowns = new Discord.Collection();
 
 // On client ready
 client.once('ready', () => {
-    // Set status offline first thing
-    client.user.setStatus('invisible')
-        .then(console.log)
-        .catch(console.error);
-    
     //.. get guild/member info
     
 
@@ -76,10 +73,19 @@ client.once('ready', () => {
         .then(console.log)
         .catch(console.error);
     
-    console.log('Client ready');
+    // Log bot info
+    client.user.fetch()
+        .then(console.log)
+        .catch(console.error);
+    
+    setTimeout(() => {console.log('\nClient ready\n')}, 100);
 });
 
-// Command handler
+/*
+Discord command handler
+
+For commands sent through Discord servers
+*/
 client.on('message', message => {
 
     // Which one of you fellers is the REAL Dirty Dan
@@ -91,8 +97,8 @@ client.on('message', message => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     // Store command and arguments from message.content
-    const args = message.content.slice(prefix.length).trim().split(/ +/);
-    const commandName = args.shift().toLowerCase();
+    let args = message.content.slice(prefix.length).trim().split(/ +/);
+    let commandName = args.shift().toLowerCase();
 
     // Invalid command
     if (!client.commands.has(commandName)) {
@@ -100,6 +106,7 @@ client.on('message', message => {
         return message.reply('your command is bad and you should feel bad.');
     }
 
+    // Load command
     const command = client.commands.get(commandName);
 
     // Check if command is guild-only
@@ -114,7 +121,7 @@ client.on('message', message => {
 
     // Command requires arguments but no arguments given
     if (command.args && !args.length) {
-        let reply = `The ${prefix}${commandName} command requires arguments.`;
+        var reply = `The ${prefix}${commandName} command requires arguments.`;
 
         if (command.usage) {
             reply += `\nUsage: ${prefix}${command.name} ${command.usage}`;
@@ -125,8 +132,9 @@ client.on('message', message => {
 
     /*
     Cooldown handler
-    Returns true if cooldown is active for message author
-    Returns false if cooldown is inactive for message author
+
+    Returns TRUE if cooldown is active for message author
+    Returns FALSE if cooldown is inactive for message author
     */
     if (cooldowns.handler(command, message)) return;
 
@@ -137,7 +145,48 @@ client.on('message', message => {
         console.error(error);
         message.channel.send('Bot machine broke. No refunds.');
     }
+});
 
+// Create console command collection in client
+client.consoleCommands = new Discord.Collection();
+
+// Store commands in client.consoleCommands collection
+const consoleCmdFiles = fs.readdirSync(consoleCmdDir).filter(file => file.endsWith('.js'));
+for (const file of consoleCmdFiles) {
+    const command = require(`${consoleCmdDir}/${file}`);
+    client.consoleCommands.set(command.name, command);
+}
+
+/*
+Console command handler
+
+Allows for back-end interaction with CraftBot
+*/
+const readline = require('readline');
+const consoleIO = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+consoleIO.on('line', (input) => {
+    // Store command and args
+    let args = input.trim().split(/ +/);
+    let commandName = args.shift();
+
+    // Verify valid command
+    if (!client.consoleCommands.has(commandName)) {
+        return console.log(`Invalid command: ${commandName}`);
+    }
+
+    // Load command
+    const command = client.consoleCommands.get(commandName);
+
+    // Execute
+    try {
+        command.execute(args);
+    } catch (error) {
+        console.log(error);
+    }
 });
 
 /*

@@ -10,7 +10,6 @@ const { prefix } = require('../config.json');
 module.exports = {
     handler(command, message) {
         const client = message.client;
-        var isActive = false;
 
         // Add entry in cooldowns for command if not present
         if (!client.cooldowns.has(command.name)) {
@@ -33,8 +32,7 @@ module.exports = {
             if (now < expirationTime) {
                 const timeLeft = (expirationTime - now) / 1000;
                 message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the '${prefix}${command.name}' command`);
-                isActive = true;
-                return isActive;
+                return true;
             }
         }
 
@@ -42,6 +40,6 @@ module.exports = {
         timestamps.set(message.author.id, now);
         setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 
-        return isActive;
+        return false;
     }
 }
