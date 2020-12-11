@@ -18,7 +18,7 @@ module.exports = {
             message.channel.send(`${taggedUser}, you're outta here!`);
         }).catch((reason) => {
             console.error(`Failed to kick ${taggedUser.user.username}. ${reason}`);
-            message.channel.send('Failed to kick user.');
+            message.channel.send('I cannot. They are too powerful.');
         });
     }
 }

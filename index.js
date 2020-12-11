@@ -12,7 +12,6 @@
 */
 
 /* TODO MAIN:
-Console command handling
 Audio files played through voice chat on command/action
 Media files posted on command/action
 */
@@ -40,16 +39,17 @@ name <string>          : command name
 
 const fs = require('fs');
 const Discord = require('discord.js');
-const { prefix, commandDir, consoleCmdDir, token, adminID } = require('./config.json');
 
+const { prefix, commandDir, consoleCmdDir, token, adminID } = require('./config.json');
 const cooldowns = require('./tools/cooldown.js'); // Cooldown handler tool
 
 // Create client object with specified gateway intents
 const { Client } = require('discord.js');
 const client = new Client({ ws: { intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_VOICE_STATES', 'GUILD_PRESENCES', 'GUILD_MESSAGES'] } });
 
-// Create command collection within client
-client.commands = new Discord.Collection();
+// Add to client:
+client.commands = new Discord.Collection(); // Command list
+client.cooldowns = new Discord.Collection(); // Cooldown lists
 
 // Create array of all .js files located in ./commands
 const commandFiles = fs.readdirSync(commandDir).filter(file => file.endsWith('.js'));
@@ -60,17 +60,19 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
-// Create command cooldown collection within client
-client.cooldowns = new Discord.Collection();
-
-// On client ready
+// Once connection established with Discord servers:
 client.once('ready', () => {
-    //.. get guild/member info
-    
+    // Add to client:
+    client.server = client.guilds.cache.first(); // Server quick-access
+    client.craftChannels = new Discord.Collection(); // Channel quick-access
+
+    // Populate client.craftChannels using channel names as keys
+    client.server.channels.cache.each(channel => {
+        client.craftChannels.set(channel.name, channel);
+    });
 
     // Set status online
     client.user.setStatus('online')
-        .then(console.log)
         .catch(console.error);
     
     // Log bot info
@@ -78,6 +80,7 @@ client.once('ready', () => {
         .then(console.log)
         .catch(console.error);
     
+    // setTimeout() keeps console output in correct order
     setTimeout(() => {console.log('\nClient ready\n')}, 100);
 });
 
@@ -183,9 +186,9 @@ consoleIO.on('line', (input) => {
 
     // Execute
     try {
-        command.execute(args);
+        command.execute(client, args);
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 });
 
@@ -228,7 +231,8 @@ fs.watch(commandDir, (event, filename) => {
     }
 });
 
-client.login(token);
+client.login(token); // Login
+
 
 /*
         .--'''''''''--.
