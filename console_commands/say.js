@@ -1,19 +1,19 @@
 /*
 say: sends a message as CraftBot
 
-Usage: "say <message>"                 : Sends message in #general
+Usage: "say <message>"                 : Sends message in defaultChannel (specified in config.json)
        "say -c <channel> <message>"    : Sends message in specified channel
 */
 
-const { DiscordAPIError } = require("discord.js");
-
 const Discord = require('discord.js');
+
+const { defaultChannel } = require('../config.json');
 
 module.exports = {
     name: 'say',
     execute(client, args) {
         // Default to general chat if no channel specified
-        var sendChannel = client.craftChannels.get('general');
+        var sendChannel = client.craftChannels.get(defaultChannel);
 
         // If -c flag, set specified channel
         if (args[0] === '-c') {
