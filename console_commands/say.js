@@ -13,14 +13,14 @@ module.exports = {
     name: 'say',
     execute(client, args) {
         // Default to general chat if no channel specified
-        var sendChannel = client.channels.get('general');
+        var sendChannel = client.craftChannels.get('general');
 
         // If -c flag, set specified channel
         if (args[0] === '-c') {
             args.shift(); // Remove flag
             
             const channelName = args.shift(); // Pop channel name
-            sendChannel = client.channels.get(channelName);
+            sendChannel = client.craftChannels.get(channelName);
         }
 
         // If no message, don't try to send

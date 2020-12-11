@@ -200,7 +200,7 @@ require.cache and reloaded into CraftBot, while craftbot is still
 running. This allows for quick, real-time changes to CraftBot, 
 without the need to restart it or type in any commands.
 */
-let fsWait = false;
+var fsWait = false;
 fs.watch(commandDir, (event, filename) => {
     // If no filename returned, or file rename, do nothing
     // (If commands are being renamed CraftBot _probably_ shouldn't be running anyway)
