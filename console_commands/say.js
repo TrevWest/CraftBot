@@ -24,7 +24,7 @@ module.exports = {
         }
 
         // If no message, don't try to send
-        if (!args) return;
+        if (!args.length) return;
 
         // Message to send
         const message = args.join(' ');
