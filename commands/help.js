@@ -23,7 +23,7 @@ module.exports = {
         */
         if (!args.length) {
             data.push('Here\'s a list of all my commands:');
-            data.push(commands.map(command => command.name).join(', '));
+            data.push('    ' + commands.map(command => command.name).join(', '));
             data.push(`\nUse '${prefix}help ${this.usage}' to get info on a specific command`);
 
             // { split: true } sends each line on a new line

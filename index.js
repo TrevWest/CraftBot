@@ -12,16 +12,19 @@
 */
 
 /* TODO MAIN:
+Get rid of client.server and client.channels (they don't update correctly) and fix say.js accordingly
+Work out optimal data structures (what really needs to be in client object? What doesn't?)
+Implement more complex command handler (DIY, or use discord.js-commando)
 Audio files played through voice chat on command/action
 Media files posted on command/action
 */
 
 /* TODO SIDE:
 Better logging of info on guild members & command message authors
-Regex for "i'm [any word(s)] dirty [any word(s)] dan
+Regex for "i'm [any word(s)/no words] dirty [any word(s)/no words] dan
 Better admin-only functionality (admin list, partial command restrictions)
-Expand argument checking (min, max, types)
-Better "usage" implementation in !help
+Expand arguments (parse out flags and pass to command)
+Better "usage" implementation in !help (also update steam.js's usage)
 Move cooldown list from client to cooldown.js(?)
 */
 
@@ -42,14 +45,14 @@ const Discord = require('discord.js');
 
 const { prefix, commandDir, consoleCmdDir, token, adminID } = require('./config.json');
 const cooldowns = require('./tools/cooldown.js'); // Cooldown handler tool
+const steamTools = require('./tools/steam_tools'); // Steam-related tools
+const tools = require('./tools/tools'); // Misc tools
 
 // Create client object with specified gateway intents
 const { Client } = require('discord.js');
 const client = new Client({ ws: { intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_VOICE_STATES', 'GUILD_PRESENCES', 'GUILD_MESSAGES'] } });
 
-// Add to client:
 client.commands = new Discord.Collection(); // Command list
-client.cooldowns = new Discord.Collection(); // Cooldown lists
 
 // Create array of all .js files located in ./commands
 const commandFiles = fs.readdirSync(commandDir).filter(file => file.endsWith('.js'));
@@ -60,8 +63,23 @@ for (const file of commandFiles) {
     client.commands.set(command.name, command);
 }
 
+client.steamUsers = new Discord.Collection(); // Quick-access user list w/ steam ID
+steamTools.read(client); // Populate client.steamUsers with steam ID information
+
+client.activeUsers = new Discord.Collection(); // List of users in voice chat
+client.masterList = new Discord.Collection(); // List of steam games with associated owners
+client.sharedList = new Discord.Collection(); // List of shared steam games for current client.activeUsers
+client.cooldowns = new Discord.Collection(); // Cooldown lists
+
+var autoUpdate; // Holds <timeout> for master list auto-update
+var attemptLogin; // Holds <timeout> for auto-login attempts
+
 // Once connection established with Discord servers:
-client.once('ready', () => {
+client.once('ready', async () => {
+    // Set status invisible
+    await client.user.setStatus('invisible').then()
+        .catch(console.error);
+    
     // Add to client:
     client.server = client.guilds.cache.first(); // Server quick-access
     client.craftChannels = new Discord.Collection(); // Channel quick-access
@@ -71,17 +89,61 @@ client.once('ready', () => {
         client.craftChannels.set(channel.name, channel);
     });
 
-    // Set status online
-    client.user.setStatus('online')
-        .catch(console.error);
-    
+    // Build master list
+    await steamTools.updateMaster(client);
+    // Auto-update master list every 3 minutes
+    autoUpdate = setInterval(steamTools.updateMaster, 180000, client);
+
     // Log bot info
-    client.user.fetch()
+    await client.user.fetch()
         .then(console.log)
         .catch(console.error);
+
+    // Set status online
+    await client.user.setStatus('online')
+        .catch(console.error);
     
-    // setTimeout() keeps console output in correct order
-    setTimeout(() => {console.log('\nClient ready\n')}, 100);
+    console.log('\nClient ready\n');
+});
+
+// Log errors on error events
+client.on('error', (error) => {
+    console.error(error);
+});
+
+// If client is disconnected, begin auto-attempting login
+client.on('invalidated', () => {
+    console.log('Client session invalidated. Retrying login every 15 seconds.');
+    attemptLogin = setInterval(() => { client.login(token); }, 1500);
+});
+
+// On successful client reconnection
+client.on('ready', () => {
+    if (!attemptLogin) return;
+    
+    // Stop auto-login attempts
+    clearInterval(attemptLogin);
+    attemptLogin = null;
+
+    console.log('Login successful. Client ready.');
+});
+
+/*
+Update active user list on voice channel join/leave
+
+This is done rather than using members' online statuses
+due to our use case: members who will be participating
+will _always_ be in voice channel
+*/
+client.on('voiceStateUpdate', (oldState, newState) => {
+    // Only trigger on joining/leaving voice channel
+    if (oldState.channel === newState.channel) return;
+
+    // Update client.activeUsers
+    tools.updateActiveUsers(client, newState);
+
+    // Update client.sharedList
+    steam_tools.updateSharedActive(client);
 });
 
 /*
@@ -166,6 +228,7 @@ Console command handler
 Allows for back-end interaction with CraftBot
 */
 const readline = require('readline');
+const steam_tools = require('./tools/steam_tools');
 const consoleIO = readline.createInterface({
     input: process.stdin,
     output: process.stdout
