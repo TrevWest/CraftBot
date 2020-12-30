@@ -21,7 +21,6 @@ Media files posted on command/action
 
 /* TODO SIDE:
 Better logging of info on guild members & command message authors
-Regex for "i'm [any word(s)/no words] dirty [any word(s)/no words] dan
 Better admin-only functionality (admin list, partial command restrictions)
 Expand arguments (parse out flags and pass to command)
 Better "usage" implementation in !help (also update steam.js's usage)
@@ -154,7 +153,7 @@ For commands sent through Discord servers
 client.on('message', message => {
 
     // Which one of you fellers is the REAL Dirty Dan
-    if (message.content.toLowerCase().includes('i\'m dirty dan') && !message.author.bot) {
+    if (message.content.toLowerCase().match(/.*[i'm|i am].*dirty.*dan.*/) && !message.author.bot) {
         message.channel.send('No, I\'m Dirty Dan');
     }
 
