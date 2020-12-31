@@ -90,8 +90,6 @@ client.once('ready', async () => {
 
     // Build master list
     await steamTools.updateMaster(client);
-    // Auto-update master list every 3 minutes
-    autoUpdate = setInterval(steamTools.updateMaster, 180000, client);
 
     // Log bot info
     await client.user.fetch()
@@ -153,7 +151,7 @@ For commands sent through Discord servers
 client.on('message', message => {
 
     // Which one of you fellers is the REAL Dirty Dan
-    if (message.content.toLowerCase().match(/.*[i'm|i am].*dirty.*dan.*/) && !message.author.bot) {
+    if (message.content.toLowerCase().match(/.*i('|.* a)m.*dirty.*dan.*/) && !message.author.bot) {
         message.channel.send('No, I\'m Dirty Dan');
     }
 
@@ -227,7 +225,6 @@ Console command handler
 Allows for back-end interaction with CraftBot
 */
 const readline = require('readline');
-const steam_tools = require('./tools/steam_tools');
 const consoleIO = readline.createInterface({
     input: process.stdin,
     output: process.stdout
