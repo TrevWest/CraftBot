@@ -12,7 +12,7 @@
 */
 
 /* TODO MAIN:
-Get rid of client.server and client.channels (they don't update correctly) and fix say.js accordingly
+Get rid of client.channels (won't update correctly if channel added) and fix say.js accordingly
 Work out optimal data structures (what really needs to be in client object? What doesn't?)
 Implement more complex command handler (DIY, or use discord.js-commando)
 Audio files played through voice chat on command/action
@@ -151,7 +151,7 @@ For commands sent through Discord servers
 client.on('message', message => {
 
     // Which one of you fellers is the REAL Dirty Dan
-    if (message.content.toLowerCase().match(/.*i('|.* a)m.*dirty.*dan.*/) && !message.author.bot) {
+    if (message.content.toLowerCase().match(/.*i('|.*a)m.*dirt(y|iest).*dan.*/) && !message.author.bot) {
         message.channel.send('No, I\'m Dirty Dan');
     }
 

@@ -140,6 +140,7 @@ module.exports = {
                         }
                     }
                 });
+                console.log('Master list updated.');
                 resolve(); // Resolve promise
             }
 
