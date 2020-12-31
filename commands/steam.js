@@ -19,15 +19,15 @@ const Discord = require('discord.js');
 const http = require('http');
 const { steamKey } = require('../config.json');
 const steamTools = require('../tools/steam_tools');
+const { help } = require('../cmd_help.json');
 
 const validFlags = ['i', 'c', 'l'];
 
 module.exports = {
     name: 'steam',
-    description: 'Interfaces with members\' steam libraries',
+    help: help.steam,
     guildOnly: true, // server use only
     args: false,     // arguments not required
-    usage: '!steam | !steam list | !steam update',
     cooldown: 1,     // 1 sec cooldown
     async execute(message, args) {
         var flags = [];

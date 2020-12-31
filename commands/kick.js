@@ -1,11 +1,14 @@
 /*
 !kick: Kicks mentioned user
+
 Usage: "!kick <@user>"
 */
 
+const { help } = require('../cmd_help.json');
+
 module.exports = {
     name: 'kick',
-    description: 'Kicks mentioned user',
+    help: help.kick,
     guildOnly: true,
     adminOnly: true,
     args: true,

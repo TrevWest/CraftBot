@@ -1,11 +1,15 @@
 /*
 !avatar: Returns avatar URL(s)
-Usage: "!avatar"                      : Send user's avatar
-       "!avatar <@user> <@user2> ..." : Send avatar of tagged user(s)
+
+Usage: "!avatar"              : Send user's avatar
+       "!avatar <@user1> ..." : Send avatar of tagged user(s)
 */
+
+const { help } = require('../cmd_help.json');
+
 module.exports = {
     name: 'avatar',
-    description: 'Returns avatar URL(s) for specified user(s), or avatar of command issuer if no users are specified',
+    help: help.avatar,
     guildOnly: false,
     args: false,
     execute(message, args) {

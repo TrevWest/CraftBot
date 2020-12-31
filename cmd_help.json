@@ -1,5 +1,34 @@
 {
-    "usage": {
-        "steam": ""
+    "help": {
+        "avatar": [
+            "!avatar: Returns avatar URL(s)\n",
+            "Usage: \"!avatar\"              : Send user's avatar",
+            "       \"!avatar <@user1> ...\" : Send avatar of tagged user(s)"
+        ],
+        "help": [
+            "!help: Lists commands, or gives information on a specific command\n",
+            "Usage: \"!help\"           : Send list of commands",
+            "       \"!help <command>\" : Send info on specified command"
+        ],
+        "kick": [
+            "!kick: Kicks mentioned user\n",
+            "Usage: \"!kick <@user>\""
+        ],
+        "server": [
+            "!server: Returns server information\n",
+            "Usage: \"!server\""
+        ],
+        "squid": [
+            "!squid: Prints image of Bikini Bottom's premier artiste\n",
+            "Usage: \"!squid\""
+        ],
+        "steam": [
+            "!steam: Interfaces with members' steam libraries\n",
+            "Usage: \"!steam [-c]\"             : Pick a shared steam game at random.",
+            "       \"!steam -l[c]\"            : lists shared steam games",
+            "       \"!steam -i <@user> <ID>\"  : adds or updates mention's steam ID\n",
+            "Flags: -c [<@user1> ...]: Choose users. If no users mentioned, use all Craftbois.",
+            "       -l : List shared games."
+        ]
     }
 }

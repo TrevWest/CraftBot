@@ -121,6 +121,7 @@ module.exports = {
         var gamesLists = new Discord.Collection(); // Contains all members' games lists
         var requestsComplete = 0; // Tracks number of HTTP requests completed
         const numMembers = client.steamUsers.size;
+        const { masterList } = client;
 
         return new Promise(resolve => {
             /**
@@ -129,17 +130,18 @@ module.exports = {
             function buildMasterList() {
                 gamesLists.each((list, username) => {
                     for (const game of list) {
-                        if (client.masterList.has(game)) { // Game in master list
+                        if (masterList.has(game)) { // Game in master list
                             // Add username to master list game entry
-                            const ownedArray = client.masterList.get(game);
+                            const ownedArray = masterList.get(game);
                             ownedArray.push(username);
-                            client.masterList.set(game, ownedArray);
+                            masterList.set(game, ownedArray);
                         } else {
                             // Add game entry to master list
-                            client.masterList.set(game, [username]);
+                            masterList.set(game, [username]);
                         }
                     }
                 });
+                
                 console.log('Master list updated.');
                 resolve(); // Resolve promise
             }

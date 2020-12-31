@@ -31,11 +31,10 @@ Make cooldowns into a class (stores cooldowns and has handler)
 Command property list ('+' indicates an optional property):
 
 name <string>          : command name
-+description <string>  : brief description; used in !help
+help <Object>          : contains help information
 +guildOnly <bool>      : determines if command is guild-only
 +adminOnly <bool>      : determines if command is admin-only
 +args <bool>           : determines if command requires arguments
-+usage <string>        : shows correct usage
 +cooldown <int>        : command cooldown time (per user) in seconds
 */
 

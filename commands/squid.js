@@ -1,12 +1,16 @@
 /*
 !squid: Prints squidward
+
 Usage: "!squid"
 
 TODO: "!squid your text here" results in squidward "speaking" the text
 */
+
+const { help } = require('../cmd_help.json');
+
 module.exports = {
     name: 'squid',
-    description: 'Prints image of Bikini Bottom\'s premier artiste',
+    help: help.squid,
     guildOnly: false,
     args: false,
     cooldown: 10,
