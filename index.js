@@ -13,18 +13,18 @@
 
 /* TODO MAIN:
 Get rid of client.channels (won't update correctly if channel added) and fix say.js accordingly
-Work out optimal data structures (what really needs to be in client object? What doesn't?)
-Implement more complex command handler (DIY, or use discord.js-commando)
 Audio files played through voice chat on command/action
 Media files posted on command/action
 */
 
 /* TODO SIDE:
 Better logging of info on guild members & command message authors
+Work out optimal data structures (what really needs to be in client object? What doesn't?)
+Implement more complex command handler (DIY, or use discord.js-commando)
 Better admin-only functionality (admin list, partial command restrictions)
 Expand arguments (parse out flags and pass to command)
 Better "usage" implementation in !help (also update steam.js's usage)
-Move cooldown list from client to cooldown.js(?)
+Make cooldowns into a class (stores cooldowns and has handler)
 */
 
 /*
@@ -70,7 +70,6 @@ client.masterList = new Discord.Collection(); // List of steam games with associ
 client.sharedList = new Discord.Collection(); // List of shared steam games for current client.activeUsers
 client.cooldowns = new Discord.Collection(); // Cooldown lists
 
-var autoUpdate; // Holds <timeout> for master list auto-update
 var attemptLogin; // Holds <timeout> for auto-login attempts
 
 // Once connection established with Discord servers:
@@ -149,7 +148,6 @@ Discord command handler
 For commands sent through Discord servers
 */
 client.on('message', message => {
-
     // Which one of you fellers is the REAL Dirty Dan
     if (message.content.toLowerCase().match(/.*i('|.*a)m.*dirt(y|iest).*dan.*/) && !message.author.bot) {
         message.channel.send('No, I\'m Dirty Dan');
@@ -171,7 +169,7 @@ client.on('message', message => {
     // Load command
     const command = client.commands.get(commandName);
 
-    // Check if command is guild-only
+    // Guild-only
     if (command.guildOnly && message.channel.type === 'dm') {
         return message.reply('Command cannot be executed within DMs!');
     }

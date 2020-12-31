@@ -3,6 +3,7 @@
     "commandDir": "./commands",
     "consoleCmdDir": "./console_commands",
     "defaultChannel": "general",
+    "voiceChannel": "voice",
     "token": "[Discord token goes here!]",
     "steamKey": "[Steam key goes here!]",
     "adminID": "[Admin role ID goes here!]"
