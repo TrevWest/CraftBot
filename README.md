@@ -20,6 +20,17 @@
     - [Overview](#overview)
     - [Under The Hood](#under-the-hood)
 - [Additional Features](#additional-features)
+    - [Console Commands](#console-commands)
+    - [Dynamic Help Command](#dynamic-help-command)
+    - [Dynamic Command Reloading](#dynamic-command-reloading)
+    - [Command Cooldown System](#command-cooldown-system)
+    - [Other Commands](#other-commands)
+        - [Kick User](#kick-user)
+        - [Server Information](#server-information)
+        - [Squid Printing Functionality](#squid-printing-functionality)
+        - [Get User Avatar](#get-user-avatar)
+    - [Dirty Dan Regex](#dirty-dan-regex)
+    - [JSON Files](#json-files)
 
 # Why Does CraftBot Exist?
 
@@ -210,7 +221,6 @@ CraftBot is designed to detect when a command file has been modified, and reload
 ## Command Cooldown System
 
 <div align="center"><img src="./readme_assets/cooldown.png" width="95%" style="border-radius:%"></div>
-</br>
 
 CraftBot utilizes a cooldown system to prevent commands from being spammed. The cooldowns are per-command, per-user, i.e., a cooldown on `!squid` for user 1 doesn't prevent user 2 from using it, and user 1 is still able to use other commands.
 
