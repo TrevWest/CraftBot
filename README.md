@@ -28,7 +28,6 @@ Over time, my group of close friends has become scattered across the country, an
 <h3 align="center"><b><i>Enter: CraftBot.</i></b></h3>
 
 <div align="center"><img src="./readme_assets/user_image.png" width="50%" style="border-radius:2%"></div>
-</br>
 
 # How Does It Work?
 
@@ -41,7 +40,6 @@ CraftBot randomly chooses a game that the users in OG Craftbois' voice channel h
 This behavior can be modified using the -c (choose) flag, which directs CraftBot to find games in common for the chosen users, or for all users if no users are specified:
 
 <div align="center"><img src="https://i.postimg.cc/B64GSRFG/CFlag-Demo.gif" width="90%"></div>
-</br>
 
 ## Under The Hood
 
@@ -173,8 +171,6 @@ CraftBot has a console command handler built in, allowing back-end commands to b
 
 Currently, the only commands implemented are `say`, which sends a message as CraftBot in the specified channel (or in #general if no channel is specified), and `mupdate`, which updates the master list.
 
-</br>
-
 ## Dynamic Help Command
 
 CraftBot contains a dynamic help command, which, when executed with no arguments, sends a list of available commands, and when executed with a command name as an argument, sends information on how to use that command.
@@ -205,25 +201,18 @@ Flags: -c [<@user1> ...]: Choose users. If no users mentioned, use all Craftbois
 Cooldown: 1 seconds
 ```
 
-</br>
-
 ## Dynamic Command Reloading
 
 <p align="center" style="color:red"><i>Insert command reloading gif here</i><p>
 
 CraftBot is designed to detect when a command file has been modified, and reload that command back into itself, allowing quick changes to commands without the need to restart CraftBot.
 
-</br>
-
 ## Command Cooldown System
 
-</br>
 <div align="center"><img src="./readme_assets/cooldown.png" width="95%" style="border-radius:%"></div>
 </br>
 
 CraftBot utilizes a cooldown system to prevent commands from being spammed. The cooldowns are per-command, per-user, i.e., a cooldown on `!squid` for user 1 doesn't prevent user 2 from using it, and user 1 is still able to use other commands.
-
-</br>
 
 ## Other Commands
 
@@ -296,17 +285,12 @@ Following years of research, CraftBot is now able to print squids with unprecede
 
 `!avatar @user` returns a direct link to the mentioned user's avatar.
 
-</br>
-
 ## Dirty Dan Regex
 
-</br>
 <div align="center"><img src="./readme_assets/dirty_dan.png" width="60%" style="border-radius:2%"></div>
 </br>
 
 CraftBot never gets tired of the classic "who's Dirty Dan" argument, as CraftBot is a machine and never gets tired of anything. It uses a simple regex, `/.*i(s|'m|.*am).*dirt(y|iest).*dan.*/`, to catch anyone claiming to be Bikini Bottom's most notorious criminal, and quickly corrects them.
-
-</br>
 
 ## JSON Files
 
