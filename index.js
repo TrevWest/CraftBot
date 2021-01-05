@@ -1,9 +1,9 @@
 /*    
  ________  ________  ________  ________ _________  ________  ________  _________   
 |\   ____\|\   __  \|\   __  \|\  _____\\___   ___\\   __  \|\   __  \|\___   ___\ 
-\ \  \___|\ \  \|\  \ \  \|\  \ \  \__/\|___ \  \_\ \  \|\ /\ \  \|\  \|___ \  \_| 
- \ \  \    \ \   _  _\ \   __  \ \   __\    \ \  \ \ \   __  \ \  \\\  \   \ \  \  
-  \ \  \____\ \  \\  \\ \  \ \  \ \  \_|     \ \  \ \ \  \|\  \ \  \\\  \   \ \  \ 
+\ \  \___|\ \  \|\  \ \  \|\  \ \  \__/\|___ \  \_\ \  \_\  \ \  \|\  \|___ \  \_| 
+ \ \  \    \ \   _  _\ \   __  \ \   __\    \ \  \ \ \   __  \ \  \ \  \   \ \  \  
+  \ \  \____\ \  \\  \\ \  \ \  \ \  \_|     \ \  \ \ \  \_\  \ \  \_\  \   \ \  \ 
    \ \_______\ \__\\ _\\ \__\ \__\ \__\       \ \__\ \ \_______\ \_______\   \ \__\
     \|_______|\|__|\|__|\|__|\|__|\|__|        \|__|  \|_______|\|_______|    \|__|
 
@@ -12,7 +12,10 @@
 */
 
 /* TODO MAIN:
+!steam -l: split large lists into chunks to bypass discord character limit
+Fix updateActiveUsers() (don't just add/remove on join, it won't work if you start the bot with people already in voice)
 Get rid of client.channels (won't update correctly if channel added) and fix say.js accordingly
+Implement README.md
 Audio files played through voice chat on command/action
 Media files posted on command/action
 */
@@ -23,7 +26,6 @@ Work out optimal data structures (what really needs to be in client object? What
 Implement more complex command handler (DIY, or use discord.js-commando)
 Better admin-only functionality (admin list, partial command restrictions)
 Expand arguments (parse out flags and pass to command)
-Better "usage" implementation in !help (also update steam.js's usage)
 Make cooldowns into a class (stores cooldowns and has handler)
 */
 
@@ -41,7 +43,7 @@ help <Object>          : contains help information
 const fs = require('fs');
 const Discord = require('discord.js');
 
-const { prefix, commandDir, consoleCmdDir, token, adminID } = require('./config.json');
+const { prefix, commandDir, consoleCmdDir, token, adminID, voiceChannel } = require('./config.json');
 const cooldowns = require('./tools/cooldown.js'); // Cooldown handler tool
 const steamTools = require('./tools/steam_tools'); // Steam-related tools
 const tools = require('./tools/tools'); // Misc tools
@@ -135,10 +137,10 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     if (oldState.channel === newState.channel) return;
 
     // Update client.activeUsers
-    tools.updateActiveUsers(client, newState);
+    tools.updateActiveUsers(client);
 
     // Update client.sharedList
-    steam_tools.updateSharedActive(client);
+    steamTools.updateSharedActive(client);
 });
 
 /*
@@ -148,7 +150,7 @@ For commands sent through Discord servers
 */
 client.on('message', message => {
     // Which one of you fellers is the REAL Dirty Dan
-    if (message.content.toLowerCase().match(/.*i('|.*a)m.*dirt(y|iest).*dan.*/) && !message.author.bot) {
+    if (message.content.toLowerCase().match(/.*i(s|'m|.*am).*dirt(y|iest).*dan.*/) && !message.author.bot) {
         message.channel.send('No, I\'m Dirty Dan');
     }
 

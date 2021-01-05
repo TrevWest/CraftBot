@@ -64,7 +64,6 @@ module.exports = {
         if (!client.activeUsers.size) {
             return client.sharedList = new Discord.Collection();
         }
-        
         /*
         For each item in master list, add to shared list only if owners array
         contains all users present in client.activeUsers
@@ -132,18 +131,15 @@ module.exports = {
                     for (const game of list) {
                         if (masterList.has(game)) { // Game in master list
                             // Add username to master list game entry
-                            const ownedArray = masterList.get(game);
-                            ownedArray.push(username);
-                            masterList.set(game, ownedArray);
+                            masterList.get(game).push(username);
                         } else {
                             // Add game entry to master list
                             masterList.set(game, [username]);
                         }
                     }
                 });
-                
                 console.log('Master list updated.');
-                resolve(); // Resolve promise
+                resolve();
             }
 
             /*

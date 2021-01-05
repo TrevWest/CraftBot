@@ -19,7 +19,7 @@
             "Usage: \"!server\""
         ],
         "squid": [
-            "!squid: Prints image of Bikini Bottom's premier artiste\n",
+            "!squid: Prints image of Bikini Bottom's greatest artiste\n",
             "Usage: \"!squid\""
         ],
         "steam": [
@@ -28,7 +28,8 @@
             "       \"!steam -l[c]\"            : lists shared steam games",
             "       \"!steam -i <@user> <ID>\"  : adds or updates mention's steam ID\n",
             "Flags: -c [<@user1> ...]: Choose users. If no users mentioned, use all Craftbois.",
-            "       -l : List shared games."
+            "       -l : List shared games.\n",
+            "By default, !steam will function using only users present in #Rabble. This behavior can be bypassed by using the -c flag."
         ]
     }
 }

@@ -147,7 +147,7 @@ module.exports = {
         Invalid argument format
         */
         else {
-            message.reply('!steam: I don\'t understand what you mean! (Invalid arguments)');
+            message.reply('I don\'t understand what you mean! (Invalid arguments)');
         }
     }
 }
