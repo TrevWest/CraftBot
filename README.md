@@ -1,6 +1,3 @@
-<div align="center"><img src="./readme_assets/craftbot_ascii.png" width="100%"></div>
-
-<!---
 <pre align="center" style="background-color:royalblue"><code style="color:lavenderblush"> ________  ________  ________  ________ _________  ________  ________  _________   
 |\   ____\|\   __  \|\   __  \|\  _____\\___   ___\\   __  \|\   __  \|\___   ___\ 
 \ \  \___|\ \  \|\  \ \  \|\  \ \  \__/\|___ \  \_\ \  \_\  \ \  \|\  \|___ \  \_| 
@@ -9,7 +6,6 @@
    \ \_______\ \__\\ _\\ \__\ \__\ \__\       \ \__\ \ \_______\ \_______\   \ \__\
     \|_______|\|__|\|__|\|__|\|__|\|__|        \|__|  \|_______|\|_______|    \|__|
 </code></pre>
--->
 
 <p align="center">CraftBot is a Discord bot created for the OG Craftbois private Discord server.<br>Its continuing mission: to seek out games to play together, helping us spend less time deciding, and more time doing.</p>
 
@@ -32,9 +28,8 @@
 
 Over time, my group of close friends has become scattered across the country, and our weekly gaming sessions have become our only means of spending time together. The only problem being, we spent almost as much time deciding on a game as we did actually playing one. We weren't sure what games we all owned, and we're all pretty indecisive.
 
-<h3 align="center"><b><i>Enter: CraftBot.</i></b></h3>
-
 <div align="center"><img src="./readme_assets/user_image.png" width="50%" style="border-radius:2%"></div>
+<h3 align="center"><b><i>Enter: CraftBot.</i></b></h3>
 
 # How Does It Work?
 
