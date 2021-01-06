@@ -205,7 +205,38 @@ Cooldown: 1 seconds
 
 ## Dynamic Command Reloading
 
-<p align="center" style="color:red"><i>Insert command reloading gif here</i><p>
+```js 
+var fsWait = false;
+fs.watch(commandDir, (event, filename) => {
+    // If no filename returned, or file rename, do nothing
+    // (If commands are being renamed CraftBot _probably_ shouldn't be running anyway)
+    if (filename && event === 'change') {
+        /*
+        Debounce function. Prevents command from being
+        reloaded multiple times per file change.
+        */
+        if (fsWait) return;
+        fsWait = setTimeout(() => {
+            fsWait = false;
+        }, 100);
+
+        console.log(`File change detected in ${commandDir}: ${filename}`);
+
+        // Remove file from require cache
+        delete require.cache[require.resolve(`${commandDir}/${filename}`)];
+
+        // Reload command into client.commands
+        try {
+            const command = require(`${commandDir}/${filename}`);
+            client.commands.set(command.name, command);
+            console.log(`Successfully reloaded ${filename}`);
+        } catch (error) {
+            console.error(`Could not reload ${filename}`);
+            console.error(error);
+        }
+    }
+});
+```
 
 CraftBot is designed to detect when a command file has been modified, and reload that command back into itself, allowing quick changes to commands without the need to restart CraftBot.
 
