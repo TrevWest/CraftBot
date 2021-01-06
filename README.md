@@ -25,10 +25,6 @@
     - [Dynamic Command Reloading](#dynamic-command-reloading)
     - [Command Cooldown System](#command-cooldown-system)
     - [Other Commands](#other-commands)
-        - [Kick User](#kick-user)
-        - [Server Information](#server-information)
-        - [Squid Printing Functionality](#squid-printing-functionality)
-        - [Get User Avatar](#get-user-avatar)
     - [Dirty Dan Regex](#dirty-dan-regex)
     - [JSON Files](#json-files)
 
