@@ -1,7 +1,6 @@
-<!---
 <div align="center"><img src="./readme_assets/craftbot_ascii.png" width="100%"></div>
--->
 
+<!---
 <pre align="center" style="background-color:royalblue"><code style="color:lavenderblush"> ________  ________  ________  ________ _________  ________  ________  _________   
 |\   ____\|\   __  \|\   __  \|\  _____\\___   ___\\   __  \|\   __  \|\___   ___\ 
 \ \  \___|\ \  \|\  \ \  \|\  \ \  \__/\|___ \  \_\ \  \_\  \ \  \|\  \|___ \  \_| 
@@ -10,6 +9,7 @@
    \ \_______\ \__\\ _\\ \__\ \__\ \__\       \ \__\ \ \_______\ \_______\   \ \__\
     \|_______|\|__|\|__|\|__|\|__|\|__|        \|__|  \|_______|\|_______|    \|__|
 </code></pre>
+-->
 
 <p align="center">CraftBot is a Discord bot created for the OG Craftbois private Discord server.<br>Its continuing mission: to seek out games to play together, helping us spend less time deciding, and more time doing.</p>
 
@@ -293,7 +293,7 @@ Following years of research, CraftBot is now able to print squids with unprecede
 
 ## Dirty Dan Regex
 
-<div align="center"><img src="./readme_assets/dirty_dan.png" width="60%" style="border-radius:2%"></div>
+<div align="center"><img src="./readme_assets/dirty_dan.png" width="50%" style="border-radius:2%"></div>
 </br>
 
 CraftBot never gets tired of the classic "who's Dirty Dan" argument, as CraftBot is a machine and never gets tired of anything. It uses a simple regex, `/.*i(s|'m|.*am).*dirt(y|iest).*dan.*/`, to catch anyone claiming to be Bikini Bottom's most notorious criminal, and quickly corrects them.
