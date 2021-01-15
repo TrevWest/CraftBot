@@ -322,7 +322,7 @@ Following years of research, CraftBot is now able to print squids with unprecede
 <div align="center"><img src="./readme_assets/dirty_dan.png" width="50%" style="border-radius:2%"></div>
 </br>
 
-CraftBot never gets tired of the classic "who's Dirty Dan" argument, as CraftBot is a machine and never gets tired of anything. It uses a simple regex, `/.*i(s|'m|.*am).*dirt(y|iest).*dan.*/`, to catch anyone claiming to be Bikini Bottom's most notorious criminal, and quickly corrects them.
+CraftBot never gets tired of the classic "who's Dirty Dan" argument, as CraftBot is a machine and never gets tired of anything. It uses a simple regex, `/i(s|m|'m|.*am).*dirt(y|iest).*dan( |$)/`, to catch anyone claiming to be Bikini Bottom's most notorious criminal, and quickly corrects them.
 
 ## JSON Files
 

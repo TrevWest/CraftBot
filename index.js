@@ -91,6 +91,12 @@ client.once('ready', async () => {
     // Build master list
     await steamTools.updateMaster(client);
 
+    // Set active users
+    tools.updateActiveUsers(client);
+
+    // Updated active user shared game list
+    steamTools.updateSharedActive(client);
+
     // Log bot info
     await client.user.fetch()
         .then(console.log)
@@ -150,7 +156,7 @@ For commands sent through Discord servers
 */
 client.on('message', message => {
     // Which one of you fellers is the REAL Dirty Dan
-    if (message.content.toLowerCase().match(/.*i(s|'m|.*am).*dirt(y|iest).*dan.*/) && !message.author.bot) {
+    if (message.content.toLowerCase().match(/i(s|m|'m|.*am).*dirt(y|iest).*dan( |$)/) && !message.author.bot) {
         message.channel.send('No, I\'m Dirty Dan');
     }
 
