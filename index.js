@@ -13,7 +13,6 @@
 
 /* TODO MAIN:
 !steam -l: split large lists into chunks to bypass discord character limit
-Fix updateActiveUsers() (don't just add/remove on join, it won't work if you start the bot with people already in voice)
 Get rid of client.channels (won't update correctly if channel added) and fix say.js accordingly
 Implement README.md
 Audio files played through voice chat on command/action
@@ -22,10 +21,11 @@ Media files posted on command/action
 
 /* TODO SIDE:
 Better logging of info on guild members & command message authors
+Implement message embeds (server info? Maybe even for game lists)
 Work out optimal data structures (what really needs to be in client object? What doesn't?)
 Implement more complex command handler (DIY, or use discord.js-commando)
 Better admin-only functionality (admin list, partial command restrictions)
-Expand arguments (parse out flags and pass to command)
+Expand command parsing (parsing system, per-command regexes for argument format checking. Maybe "input" class?)
 Make cooldowns into a class (stores cooldowns and has handler)
 */
 
@@ -34,6 +34,7 @@ Command property list ('+' indicates an optional property):
 
 name <string>          : command name
 help <Object>          : contains help information
+format <regex> (TODO)  : regex for argument formatting
 +guildOnly <bool>      : determines if command is guild-only
 +adminOnly <bool>      : determines if command is admin-only
 +args <bool>           : determines if command requires arguments
@@ -157,7 +158,7 @@ For commands sent through Discord servers
 client.on('message', message => {
     // Which one of you fellers is the REAL Dirty Dan
     if (message.content.toLowerCase().match(/i(s|m|'m|.*am).*dirt(y|iest).*dan( |$)/) && !message.author.bot) {
-        message.channel.send('No, I\'m Dirty Dan');
+        return message.channel.send('No, I\'m Dirty Dan');
     }
 
     // Ignore normal messages, and those sent by bots

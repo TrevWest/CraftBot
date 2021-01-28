@@ -28,16 +28,16 @@
 
 Over time, my group of close friends has become scattered across the country, and our weekly gaming sessions have become our only means of spending time together. The only problem being, we spent almost as much time deciding on a game as we did actually playing one. We weren't sure what games we all owned, and we're all pretty indecisive.
 
-<div align="center"><img src="./readme_assets/user_image.png" width="50%" style="border-radius:2%"></div>
 <h3 align="center"><b><i>Enter: CraftBot.</i></b></h3>
+<div align="center"><img src="./readme_assets/user_image.png" width="50%" style="border-radius:2%"></div>
 
 # How Does It Work?
 
 ## Overview
 
-CraftBot randomly chooses a game that the users in OG Craftbois' voice channel have in common, or lists them if the -l (list) flag is set:
+CraftBot randomly chooses a game that the users in OG Craftbois' voice channel have in common (not shown here), or lists them if the -l (list) flag is set:
 
-<p align="center" style="color:red"><i>Insert joining/leaving rabble gif here</i></p>
+<div align="center"><img src="https://i.postimg.cc/0yf75Tcn/Voice-Channel-Demo.gif" width="90%"></div>
 
 This behavior can be modified using the -c (choose) flag, which directs CraftBot to find games in common for the chosen users, or for all users if no users are specified:
 
