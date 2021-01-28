@@ -35,7 +35,7 @@ Over time, my group of close friends has become scattered across the country, an
 
 ## Overview
 
-CraftBot randomly chooses a game that the users in OG Craftbois' voice channel have in common (not shown here), or lists them if the -l (list) flag is set:
+CraftBot randomly chooses a game that the users in OG Craftbois' voice channel have in common, or lists them if the -l (list) flag is set (only -l flag behavior shown for demonstration purposes):
 
 <div align="center"><img src="https://i.postimg.cc/0yf75Tcn/Voice-Channel-Demo.gif" width="90%"></div>
 </br>
