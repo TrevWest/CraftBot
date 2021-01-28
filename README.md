@@ -38,6 +38,7 @@ Over time, my group of close friends has become scattered across the country, an
 CraftBot randomly chooses a game that the users in OG Craftbois' voice channel have in common (not shown here), or lists them if the -l (list) flag is set:
 
 <div align="center"><img src="https://i.postimg.cc/0yf75Tcn/Voice-Channel-Demo.gif" width="90%"></div>
+</br>
 
 This behavior can be modified using the -c (choose) flag, which directs CraftBot to find games in common for the chosen users, or for all users if no users are specified:
 
