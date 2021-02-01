@@ -206,6 +206,8 @@ Cooldown: 1 seconds
 
 ## Dynamic Command Reloading
 
+CraftBot is designed to detect when a command file has been modified, and reload that command back into itself, allowing quick changes to commands without the need to restart CraftBot.
+
 ```js 
 var fsWait = false;
 fs.watch(commandDir, (event, filename) => {
@@ -238,8 +240,6 @@ fs.watch(commandDir, (event, filename) => {
     }
 });
 ```
-
-CraftBot is designed to detect when a command file has been modified, and reload that command back into itself, allowing quick changes to commands without the need to restart CraftBot.
 
 ## Command Cooldown System
 
@@ -327,4 +327,4 @@ CraftBot never gets tired of the classic "who's Dirty Dan" argument, as CraftBot
 
 ## JSON Files
 
-Critical information is stored in JSON files, `config.json` and `steam.json`, for easy access and modification. Example versions of these files can be found in this repository.
+Critical information is stored in JSON files (`cmd_help.json`, `config.json`, and `steam.json`) for easy access and modification. Example versions of these files can be found in this repository.
