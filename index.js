@@ -16,7 +16,8 @@
 Get rid of client.channels (won't update correctly if channel added) and fix say.js accordingly
 Implement README.md
 Audio files played through voice chat on command/action
-Media files posted on command/action
+Media files posted on command/action\
+Using steam -i to update user doesn't correctly update shared game list
 */
 
 /* TODO SIDE:

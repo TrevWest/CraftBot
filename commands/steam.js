@@ -59,7 +59,7 @@ module.exports = {
             }
 
             const ID = args[1];
-            const user = messasge.mentions.users.first().username;
+            const user = message.mentions.users.first().username;
 
             // Update/add steam user list entry and write to steam.json
             message.client.steamUsers.set(user, ID);
