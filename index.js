@@ -11,25 +11,6 @@
              Created by Trevor Westergard for OG Craftbois Discord Server
 */
 
-/* TODO MAIN:
-!steam -l: split large lists into chunks to bypass discord character limit
-Get rid of client.channels (won't update correctly if channel added) and fix say.js accordingly
-Implement README.md
-Audio files played through voice chat on command/action
-Media files posted on command/action\
-Using steam -i to update user doesn't correctly update shared game list
-*/
-
-/* TODO SIDE:
-Better logging of info on guild members & command message authors
-Implement message embeds (server info? Maybe even for game lists)
-Work out optimal data structures (what really needs to be in client object? What doesn't?)
-Implement more complex command handler (DIY, or use discord.js-commando)
-Better admin-only functionality (admin list, partial command restrictions)
-Expand command parsing (parsing system, per-command regexes for argument format checking. Maybe "input" class?)
-Make cooldowns into a class (stores cooldowns and has handler)
-*/
-
 /*
 Command property list ('+' indicates an optional property):
 
@@ -45,122 +26,95 @@ format <regex> (TODO)  : regex for argument formatting
 const fs = require('fs');
 const Discord = require('discord.js');
 
-const { prefix, commandDir, consoleCmdDir, token, adminID, voiceChannel } = require('./config.json');
-const cooldowns = require('./tools/cooldown.js'); // Cooldown handler tool
-const steamTools = require('./tools/steam_tools'); // Steam-related tools
-const tools = require('./tools/tools'); // Misc tools
+const { prefix, commandDir, consoleCmdDir, token, adminID } = require('./config.json');
+const cooldowns = require('./tools/cooldown.js'); // Cooldown handler
+const { read, updateSharedList, updateMaster } = require('./tools/steam_tools');
+const { updateActiveUsers, dirtyDan } = require('./tools/tools');
 
-// Create client object with specified gateway intents
+/* Create client object */
+
 const { Client } = require('discord.js');
 const client = new Client({ ws: { intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_VOICE_STATES', 'GUILD_PRESENCES', 'GUILD_MESSAGES'] } });
 
-client.commands = new Discord.Collection(); // Command list
+/* Initialize command list */
 
-// Create array of all .js files located in ./commands
+client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync(commandDir).filter(file => file.endsWith('.js'));
-
-// Map command files to command names in client.commands
-for (const file of commandFiles) {
-    const command = require(`${commandDir}/${file}`);
+for (let file of commandFiles) {
+    let command = require(`${commandDir}/${file}`);
     client.commands.set(command.name, command);
 }
 
-client.steamUsers = new Discord.Collection(); // Quick-access user list w/ steam ID
-steamTools.read(client); // Populate client.steamUsers with steam ID information
+/* Initialize user list */
 
-client.activeUsers = new Discord.Collection(); // List of users in voice chat
+read(client);
+
+/* Other important data */
+
 client.masterList = new Discord.Collection(); // List of steam games with associated owners
 client.sharedList = new Discord.Collection(); // List of shared steam games for current client.activeUsers
 client.cooldowns = new Discord.Collection(); // Cooldown lists
 
-var attemptLogin; // Holds <timeout> for auto-login attempts
+/* Finish setup on connection to server */
 
-// Once connection established with Discord servers:
 client.once('ready', async () => {
-    // Set status invisible
-    await client.user.setStatus('invisible').then()
-        .catch(console.error);
-    
-    // Add to client:
+    await client.user.setStatus('invisible').catch(console.error);
+    /* ------------ THIS ALL NEEDS TO GO ------------ */
     client.server = client.guilds.cache.first(); // Server quick-access
-    client.craftChannels = new Discord.Collection(); // Channel quick-access
 
-    // Populate client.craftChannels using channel names as keys
+    client.craftChannels = new Discord.Collection(); // Channel quick-access
     client.server.channels.cache.each(channel => {
         client.craftChannels.set(channel.name, channel);
     });
-
-    // Build master list
-    await steamTools.updateMaster(client);
-
-    // Set active users
-    tools.updateActiveUsers(client);
-
-    // Updated active user shared game list
-    steamTools.updateSharedActive(client);
-
+    /* ---------------------------------------------- */
+    await updateMaster(client);
+    updateActiveUsers(client);
+    updateSharedList(client);
     // Log bot info
-    await client.user.fetch()
-        .then(console.log)
-        .catch(console.error);
-
-    // Set status online
-    await client.user.setStatus('online')
-        .catch(console.error);
-    
+    await client.user.fetch().then(console.log).catch(console.error);
+    await client.user.setStatus('online').catch(console.error);
     console.log('\nClient ready\n');
 });
 
-// Log errors on error events
-client.on('error', (error) => {
-    console.error(error);
-});
+/* Error event handling */
 
-// If client is disconnected, begin auto-attempting login
+client.on('error', console.error);
+
+/* Session invalidated auto-login */
+
 client.on('invalidated', () => {
     console.log('Client session invalidated. Retrying login every 15 seconds.');
-    attemptLogin = setInterval(() => { client.login(token); }, 1500);
-});
-
-// On successful client reconnection
-client.on('ready', () => {
-    if (!attemptLogin) return;
-    
-    // Stop auto-login attempts
-    clearInterval(attemptLogin);
-    attemptLogin = null;
-
-    console.log('Login successful. Client ready.');
+    let attemptLogin = setInterval(() => { client.login(token); }, 1500);
+    // On successful client reconnection
+    client.once('ready', () => {
+        if (!attemptLogin) return;
+        clearInterval(attemptLogin);
+        console.log('Login successful. Client ready.');
+    });
 });
 
 /*
-Update active user list on voice channel join/leave
+    Update active user list on voice channel join/leave
 
-This is done rather than using members' online statuses
-due to our use case: members who will be participating
-will _always_ be in voice channel
+    This is done rather than using members' online statuses
+    due to our use case: members who will be participating
+    will _always_ be in voice channel
 */
 client.on('voiceStateUpdate', (oldState, newState) => {
     // Only trigger on joining/leaving voice channel
     if (oldState.channel === newState.channel) return;
 
     // Update client.activeUsers
-    tools.updateActiveUsers(client);
+    updateActiveUsers(client);
 
     // Update client.sharedList
-    steamTools.updateSharedActive(client);
+    updateSharedList(client);
 });
 
-/*
-Discord command handler
+/* Discord command handler */
 
-For commands sent through Discord servers
-*/
 client.on('message', message => {
-    // Which one of you fellers is the REAL Dirty Dan
-    if (message.content.toLowerCase().match(/i(s|m|'m|.*am).*dirt(y|iest).*dan( |$)/) && !message.author.bot) {
-        return message.channel.send('No, I\'m Dirty Dan');
-    }
+    if (dirtyDan(message)) return;
 
     // Ignore normal messages, and those sent by bots
     if (!message.content.startsWith(prefix) || message.author.bot) return;

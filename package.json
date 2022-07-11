@@ -1,7 +1,7 @@
 {
   "name": "craftbot",
   "version": "1.0.0",
-  "description": "Craftbois craftbot cookin up the pork chops",
+  "description": "Craftbois' craftbot cookin up the pork chops",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

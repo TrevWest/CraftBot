@@ -1,6 +1,4 @@
-/*
-General-purpose tools for craftbot
-*/
+/* Tools for craftbot */
 
 const Discord = require('discord.js');
 const { voiceChannel } = require('../config.json');
@@ -11,20 +9,29 @@ module.exports = {
      * @param {Discord.Client} client 
      * @param {Discord.VoiceState} newState 
      */
-    // (Should have already validated that voice state change was join/leave before calling)
     updateActiveUsers: (client) => {
-        // Get active user channel (defined in config.json)
         const activeUserChannel = client.server.channels.cache.find(channel => channel.name === voiceChannel);
-        var activeUsers = [];
+        const activeUsers = new Set();
         
-        // Get usernames of members in voice channel
-        activeUserChannel.members.array().forEach(member => {
-            activeUsers.push(member.user.username);
+        activeUserChannel.members.each(member => {
+            activeUsers.add(member.user.username);
         });
-                
-        // Set client.activeUsers
         client.activeUsers = client.steamUsers.filter((ID, username) => {
-            return activeUsers.includes(username);
+            return activeUsers.has(username);
         });
+    },
+    /**
+     * No, I'm Dirty Dan.
+     * @param {Discord.Message} message 
+     * @returns {boolean} Returns true if valid Dirty Dan message
+     */
+    dirtyDan: (message) => {
+        if (message.author.bot) return false;
+        let regex = /i(s|m|'m|.*am).*dirt(y|iest).*dan( |$)/;
+        if (message.content.toLowerCase().match(regex)) {
+            message.channel.send('No, I\'m Dirty Dan');
+            return true;
+        }
+        return false;
     }
 }
