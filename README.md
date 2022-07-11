@@ -1,4 +1,4 @@
-<pre align="center" style="background-color:royalblue"><code style="color:lavenderblush"> ________  ________  ________  ________ _________  ________  ________  _________   
+<pre align="center" style="background-color:royalblue"><code align="center" style="color:lavenderblush"> ________  ________  ________  ________ _________  ________  ________  _________   
 |\   ____\|\   __  \|\   __  \|\  _____\\___   ___\\   __  \|\   __  \|\___   ___\ 
 \ \  \___|\ \  \|\  \ \  \|\  \ \  \__/\|___ \  \_\ \  \_\  \ \  \|\  \|___ \  \_| 
  \ \  \    \ \   _  _\ \   __  \ \   __\    \ \  \ \ \   __  \ \  \ \  \   \ \  \  
