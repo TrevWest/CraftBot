@@ -1,11 +1,11 @@
-<pre align="center" style="background-color:royalblue"><div align="center"><code style="color:lavenderblush; text-align:center"> ________  ________  ________  ________ _________  ________  ________  _________   
+<pre align="center" style="background-color:royalblue"><code style="color:lavenderblush; text-align:center"> ________  ________  ________  ________ _________  ________  ________  _________   
 |\   ____\|\   __  \|\   __  \|\  _____\\___   ___\\   __  \|\   __  \|\___   ___\ 
 \ \  \___|\ \  \|\  \ \  \|\  \ \  \__/\|___ \  \_\ \  \_\  \ \  \|\  \|___ \  \_| 
  \ \  \    \ \   _  _\ \   __  \ \   __\    \ \  \ \ \   __  \ \  \ \  \   \ \  \  
   \ \  \____\ \  \\  \\ \  \ \  \ \  \_|     \ \  \ \ \  \_\  \ \  \_\  \   \ \  \ 
    \ \_______\ \__\\ _\\ \__\ \__\ \__\       \ \__\ \ \_______\ \_______\   \ \__\
     \|_______|\|__|\|__|\|__|\|__|\|__|        \|__|  \|_______|\|_______|    \|__|
-</code></div></pre>
+</code></pre>
 
 <p align="center">CraftBot is a Discord bot created for the OG Craftbois private Discord server.<br>Its continuing mission: to seek out games to play together, helping us spend less time deciding, and more time doing.</p>
 
