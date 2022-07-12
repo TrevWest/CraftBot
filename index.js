@@ -27,9 +27,9 @@ const fs = require('fs');
 const Discord = require('discord.js');
 
 const { prefix, commandDir, consoleCmdDir, token, adminID } = require('./config.json');
-const cooldowns = require('./tools/cooldown.js'); // Cooldown handler
 const { read, updateSharedList, updateMaster } = require('./tools/steam_tools');
-const { updateActiveUsers, dirtyDan } = require('./tools/tools');
+const { updateActiveUsers, dirtyDan, parseCmd, validCommandUsage } = require('./tools/tools');
+const { cooldownHandler } = require('./tools/cooldown.js');
 
 /* Create client object */
 
@@ -67,13 +67,45 @@ client.once('ready', async () => {
         client.craftChannels.set(channel.name, channel);
     });
     /* ---------------------------------------------- */
+    
     await updateMaster(client);
     updateActiveUsers(client);
     updateSharedList(client);
-    // Log bot info
-    await client.user.fetch().then(console.log).catch(console.error);
+
+    await client.user.fetch().then(console.log).catch(console.error); // Log info
     await client.user.setStatus('online').catch(console.error);
     console.log('\nClient ready\n');
+});
+
+/* Update active user list on voice channel join/leave */
+
+client.on('voiceStateUpdate', (oldState, newState) => {
+    // Only trigger on joining/leaving voice channel
+    if (oldState.channel === newState.channel) return;
+    updateActiveUsers(client);
+    updateSharedList(client);
+});
+
+/* Discord command handler */
+
+client.on('message', (message) => {
+    if (dirtyDan(message)) return;
+    if (!message.content.startsWith(prefix) || message.author.bot) return;
+
+    const args = message.content.slice(prefix.length).trim().split(/ +/);
+    const commandName = args.shift().toLowerCase();
+    const command = parseCmd(commandName, message);
+    if (!command) return; //Invalid command or usage
+
+    if (!validCommandUsage(command, message)) return;
+    if (cooldownHandler(command, message)) return; //CD is active
+
+    try {
+        command.execute(message, args);
+    } catch (error) {
+        console.error(error);
+        message.channel.send('Bot machine broke. No refunds.');
+    }
 });
 
 /* Error event handling */
@@ -85,89 +117,11 @@ client.on('error', console.error);
 client.on('invalidated', () => {
     console.log('Client session invalidated. Retrying login every 15 seconds.');
     let attemptLogin = setInterval(() => { client.login(token); }, 1500);
-    // On successful client reconnection
-    client.once('ready', () => {
+    client.once('ready', () => { // On successful client reconnection
         if (!attemptLogin) return;
         clearInterval(attemptLogin);
         console.log('Login successful. Client ready.');
     });
-});
-
-/*
-    Update active user list on voice channel join/leave
-
-    This is done rather than using members' online statuses
-    due to our use case: members who will be participating
-    will _always_ be in voice channel
-*/
-client.on('voiceStateUpdate', (oldState, newState) => {
-    // Only trigger on joining/leaving voice channel
-    if (oldState.channel === newState.channel) return;
-
-    // Update client.activeUsers
-    updateActiveUsers(client);
-
-    // Update client.sharedList
-    updateSharedList(client);
-});
-
-/* Discord command handler */
-
-client.on('message', message => {
-    if (dirtyDan(message)) return;
-
-    // Ignore normal messages, and those sent by bots
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
-
-    // Store command and arguments from message.content
-    let args = message.content.slice(prefix.length).trim().split(/ +/);
-    let commandName = args.shift().toLowerCase();
-
-    // Invalid command
-    if (!client.commands.has(commandName)) {
-        console.log(`Invalid command: ${commandName}`);
-        return message.reply('your command is bad and you should feel bad.');
-    }
-
-    // Load command
-    const command = client.commands.get(commandName);
-
-    // Guild-only
-    if (command.guildOnly && message.channel.type === 'dm') {
-        return message.reply('Command cannot be executed within DMs!');
-    }
-
-    // Admin-only
-    if (command.adminOnly && message.member.roles.cache.first().id != adminID) {
-        return message.reply('this command is admin-only');
-    }
-
-    // Command requires arguments but no arguments given
-    if (command.args && !args.length) {
-        var reply = `The ${prefix}${commandName} command requires arguments.`;
-
-        if (command.usage) {
-            reply += `\nUsage: ${prefix}${command.name} ${command.usage}`;
-        }
-
-        return message.channel.send(`\`\`\`\n${reply}\n\`\`\``);
-    }
-
-    /*
-    Cooldown handler
-
-    Returns TRUE if cooldown is active for message author
-    Returns FALSE if cooldown is inactive for message author
-    */
-    if (cooldowns.handler(command, message)) return;
-
-    // Execute command
-    try {
-        command.execute(message, args);
-    } catch (error) {
-        console.error(error);
-        message.channel.send('Bot machine broke. No refunds.');
-    }
 });
 
 // Create console command collection in client
@@ -186,6 +140,7 @@ Console command handler
 Allows for back-end interaction with CraftBot
 */
 const readline = require('readline');
+const { cooldownHandler } = require('./tools/cooldown');
 const consoleIO = readline.createInterface({
     input: process.stdin,
     output: process.stdout

@@ -8,7 +8,7 @@ const Discord = require('discord.js');
 const { prefix } = require('../config.json');
 
 module.exports = {
-    handler(command, message) {
+    cooldownHandler(command, message) {
         const client = message.client;
 
         // Add entry in cooldowns for command if not present
