@@ -28,8 +28,7 @@ const Discord = require('discord.js');
 
 const { prefix, commandDir, consoleCmdDir, token, adminID } = require('./config.json');
 const { read, updateSharedList, updateMaster } = require('./tools/steam_tools');
-const { updateActiveUsers, dirtyDan, parseCmd, validCommandUsage } = require('./tools/tools');
-const { cooldownHandler } = require('./tools/cooldown.js');
+const { updateActiveUsers, dirtyDan, parseCmd, execute } = require('./tools/tools');
 
 /* Create client object */
 
@@ -67,7 +66,7 @@ client.once('ready', async () => {
         client.craftChannels.set(channel.name, channel);
     });
     /* ---------------------------------------------- */
-    
+
     await updateMaster(client);
     updateActiveUsers(client);
     updateSharedList(client);
@@ -95,17 +94,9 @@ client.on('message', (message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
     const command = parseCmd(commandName, message);
-    if (!command) return; //Invalid command or usage
+    if (!command) return; //Invalid command
 
-    if (!validCommandUsage(command, message)) return;
-    if (cooldownHandler(command, message)) return; //CD is active
-
-    try {
-        command.execute(message, args);
-    } catch (error) {
-        console.error(error);
-        message.channel.send('Bot machine broke. No refunds.');
-    }
+    execute(command, message, args);
 });
 
 /* Error event handling */

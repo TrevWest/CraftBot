@@ -57,7 +57,7 @@ module.exports = {
      * <info>Active user shared games list is stored in client.sharedList</info>
      * @param {Discord.Client} client 
      */
-    updateSharedActive: client => {
+    updateSharedList: client => {
         /*
         If no active users, set client.sharedList to blank collection
         */
